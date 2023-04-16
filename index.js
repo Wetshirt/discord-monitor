@@ -3,6 +3,9 @@ const { updateRow } = require('./googleSheet.js');
 const { createLoggingInfo } = require('./googleSheet.js');
 const { getCurrentTime } = require('./date.js');
 
+// keep our service alive
+const keep_alive = require('./keep_alive.js');
+
 const { Client, GatewayIntentBits } = require('discord.js');
 const client = new Client({
   intents: [
@@ -24,7 +27,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
   if (newState.channelId && !oldState.channelId) {
     console.log('Someone joined');
     console.log(newState.member.nickname);
-    
+
     //write connect time to user
     updateRow(newState.member.id, newState.member.nickname, getCurrentTime());
   }
