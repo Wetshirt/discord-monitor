@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { updateRow } = require('./googleSheet.js');
+const { createLoggingInfo } = require('./googleSheet.js');
 const { getCurrentTime } = require('./date.js');
 
 const { Client, GatewayIntentBits } = require('discord.js');
@@ -25,7 +26,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     console.log(newState.member.nickname);
     
     //write connect time to user
-    updateRow(newState.member.id, newState.member.nickname, null,getCurrentTime());
+    updateRow(newState.member.id, newState.member.nickname, getCurrentTime());
   }
   else if (oldState.channelId && !newState.channelId) {
     console.log('Someone left');
@@ -37,6 +38,15 @@ client.on('voiceStateUpdate', (oldState, newState) => {
   }
 });
 
+client.on('presenceUpdate', (oldPresence, newPresence) => {
+  if (newPresence && newPresence.status === 'online') {
+    console.log(newPresence.member.id);
+    console.log(newPresence.clientStatus);
+    let user = client.users.cache.get(newPresence.member.id);
+    console.log(user.username)
+    createLoggingInfo(newPresence.member.id, user.username, getCurrentTime(), JSON.stringify(newPresence.clientStatus));
+  }
+});
 
 const TOKEN = process.env.DISCORD_TOKEN;
 client.login(TOKEN);

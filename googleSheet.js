@@ -17,7 +17,7 @@ async function getSheet(index) {
 
   return doc.sheetsByIndex[index];
 }
-async function updateRow(id, username, lastOnline, lastConnect) {
+async function updateRow(id, username, lastConnect) {
 
   // get first sheet in xls
   const sheet = await getSheet(0);
@@ -34,14 +34,7 @@ async function updateRow(id, username, lastOnline, lastConnect) {
   if (userIdx) {
     rows[userIdx].id = id;
     rows[userIdx].username = username;
-
-    if (lastOnline) {
-      rows[userIdx].lastOnline = lastOnline;
-    }
-
-    if (lastConnect) {
-      rows[userIdx].lastConnect = lastConnect;
-    }
+    rows[userIdx].lastConnect = lastConnect;
     
     await rows[userIdx].save();
   }
@@ -50,7 +43,6 @@ async function updateRow(id, username, lastOnline, lastConnect) {
       {
         id: id,
         username: username,
-        lastOnline: lastOnline,
         lastConnect: lastConnect,
       },
     ]);
@@ -59,6 +51,22 @@ async function updateRow(id, username, lastOnline, lastConnect) {
   console.log('updated row');
 }
 
+async function createLoggingInfo(id, username, online, platform) {
+
+  // get first sheet in xls
+  const sheet = await getSheet(1);
+
+  await sheet.addRows([
+    {
+      id: id,
+      username: username,
+      online: online,
+      platform: platform,
+    },
+  ]);
+}
+
 module.exports = {
   updateRow,
+  createLoggingInfo,
 };
