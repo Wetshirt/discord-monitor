@@ -23,30 +23,14 @@ async function updateRow(id, username, lastConnect) {
   const sheet = await getSheet(0);
   const rows = await sheet.getRows(); // can pass in { limit, offset }
 
-  let userIdx = null; 
-  for (row in rows) {
-    if (rows[row].id == id) {
-      userIdx = row;
-    }
-  }
+  await sheet.addRows([
+    {
+      id: id,
+      username: username,
+      lastConnect: lastConnect,
+    },
+  ]);
   
-  //if users already exist just update thier own data or create new row
-  if (userIdx) {
-    rows[userIdx].id = id;
-    rows[userIdx].username = username;
-    rows[userIdx].lastConnect = lastConnect;
-    
-    await rows[userIdx].save();
-  }
-  else {
-    await sheet.addRows([
-      {
-        id: id,
-        username: username,
-        lastConnect: lastConnect,
-      },
-    ]);
-  }
   
   console.log('updated row');
 }
