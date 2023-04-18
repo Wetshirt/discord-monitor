@@ -12,6 +12,13 @@ const client = new Client({
     // GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildVoiceStates,
     GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMessageTyping,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.DirectMessageReactions,
+    GatewayIntentBits.DirectMessageTyping,
   ],
 });
 
@@ -47,6 +54,18 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
     createLoggingInfo(newPresence.member.id, user.username, getCurrentTime(),
         JSON.stringify(newPresence.clientStatus));
   }
+});
+
+client.on('messageCreate', (message) => {
+  if (message.author.bot) {
+    return;
+  }
+  console.log('new message...');
+  console.log(message.author.id);
+  console.log(message.author.username);
+
+  createLoggingInfo(message.author.id, message.author.username,
+      getCurrentTime(), 'message');
 });
 
 const TOKEN = process.env.DISCORD_TOKEN;
