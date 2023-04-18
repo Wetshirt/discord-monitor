@@ -36,6 +36,8 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 
     // write connect time to user
     updateRow(newState.member.id, newState.member.nickname, getCurrentTime());
+    createLoggingInfo(newState.member.id, newState.member.nickname,
+        getCurrentTime(), 'enter channel');
   } else if (oldState.channelId && !newState.channelId) {
     console.log('Someone left');
     console.log(oldState.member.nickname);
