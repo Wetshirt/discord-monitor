@@ -1,6 +1,6 @@
 /* eslint-disable linebreak-style */
 require('dotenv').config();
-const GoogleSpreadsheet = require('google-spreadsheet');
+const {GoogleSpreadsheet} = require('google-spreadsheet');
 
 // Initialize the sheet - doc ID is the long id in the sheets URL
 const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID);
