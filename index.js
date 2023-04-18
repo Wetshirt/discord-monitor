@@ -5,7 +5,7 @@ const {getCurrentTime} = require('./date.js');
 
 // keep our service alive
 require('./keep_alive.js');
-const {Client, GatewayIntentBits} = require('discord.js');
+const {Client, GatewayIntentBits, Partials} = require('discord.js');
 
 const client = new Client({
   intents: [
@@ -20,6 +20,7 @@ const client = new Client({
     GatewayIntentBits.DirectMessageReactions,
     GatewayIntentBits.DirectMessageTyping,
   ],
+  partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
 
 client.on('ready', () => {
@@ -68,6 +69,31 @@ client.on('messageCreate', (message) => {
 
   createLoggingInfo(message.author.id, message.author.username,
       getCurrentTime(), 'message');
+});
+
+// reaction occured
+client.on('messageReactionAdd', async (reaction, user) => {
+  // When a reaction is received, check if the structure is partial
+  if (reaction.partial) {
+    /**
+     * If the message this reaction belongs to was removed
+     * the fetching might result in an API error which should be handled
+     */
+    try {
+      await reaction.fetch();
+    } catch (error) {
+      console.error('Something went wrong when fetching the message:', error);
+      // Return as `reaction.message.author` may be undefined/null
+      return;
+    }
+  }
+
+  // Now the message has been cached and is fully available
+  console.log('new reaction...');
+  console.log(reaction.message.author.id);
+  console.log(reaction.message.author.username);
+  createLoggingInfo(reaction.message.author.id,
+      reaction.message.author.username, getCurrentTime(), reaction.emoji.name);
 });
 
 const TOKEN = process.env.DISCORD_TOKEN;
