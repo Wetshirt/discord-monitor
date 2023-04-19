@@ -50,6 +50,9 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 
 client.on('presenceUpdate', (oldPresence, newPresence) => {
   if (newPresence && newPresence.status === 'online') {
+    if (newPresence.member.bot) {
+      return;
+    }
     console.log(newPresence.member.id);
     console.log(newPresence.clientStatus);
     const user = client.users.cache.get(newPresence.member.id);
