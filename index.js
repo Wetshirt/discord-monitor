@@ -89,11 +89,14 @@ client.on('messageReactionAdd', async (reaction, user) => {
   }
 
   // Now the message has been cached and is fully available
+  if (user.bot === true) {
+    return;
+  }
   console.log('new reaction...');
-  console.log(reaction.message.author.id);
-  console.log(reaction.message.author.username);
-  createLoggingInfo(reaction.message.author.id,
-      reaction.message.author.username, getCurrentTime(), reaction.emoji.name);
+  console.log(user.id);
+  console.log(user.username);
+  createLoggingInfo(user.id,
+      user.username, getCurrentTime(), reaction.emoji.name);
 });
 
 const TOKEN = process.env.DISCORD_TOKEN;
