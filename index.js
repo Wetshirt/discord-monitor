@@ -33,11 +33,18 @@ client.on('ready', () => {
 client.on('voiceStateUpdate', (oldState, newState) => {
   if (newState.channelId && !oldState.channelId) {
     console.log('Someone joined');
-    console.log(newState.member.nickname);
+
+    // if nickname not exist use default username
+    const name = newState.member.nickname;
+    if (name == null) {
+      name = newState.member.username;
+    }
+
+    console.log(name);
 
     // write connect time to user
-    updateRow(newState.member.id, newState.member.nickname, getCurrentTime());
-    createLoggingInfo(newState.member.id, newState.member.nickname,
+    updateRow(newState.member.id, name, getCurrentTime());
+    createLoggingInfo(newState.member.id, name,
       getCurrentTime(), 'enter channel');
   } else if (oldState.channelId && !newState.channelId) {
     console.log('Someone left');
