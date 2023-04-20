@@ -1,11 +1,11 @@
 require('dotenv').config();
-const {updateRow} = require('./googleSheet.js');
-const {createLoggingInfo} = require('./googleSheet.js');
-const {getCurrentTime} = require('./date.js');
+const { updateRow } = require('./googleSheet.js');
+const { createLoggingInfo } = require('./googleSheet.js');
+const { getCurrentTime } = require('./date.js');
 
 // keep our service alive
 require('./keep_alive.js');
-const {Client, GatewayIntentBits, Partials} = require('discord.js');
+const { Client, GatewayIntentBits, Partials } = require('discord.js');
 
 const client = new Client({
   intents: [
@@ -38,7 +38,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     // write connect time to user
     updateRow(newState.member.id, newState.member.nickname, getCurrentTime());
     createLoggingInfo(newState.member.id, newState.member.nickname,
-        getCurrentTime(), 'enter channel');
+      getCurrentTime(), 'enter channel');
   } else if (oldState.channelId && !newState.channelId) {
     console.log('Someone left');
     console.log(oldState.member.nickname);
@@ -50,7 +50,8 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 
 client.on('presenceUpdate', (oldPresence, newPresence) => {
   if (newPresence && newPresence.status === 'online') {
-    if (newPresence.member.bot) {
+    console.log(newPresence.member.user.bot);
+    if (newPresence.member.user.bot) {
       return;
     }
     console.log(newPresence.member.id);
@@ -58,7 +59,7 @@ client.on('presenceUpdate', (oldPresence, newPresence) => {
     const user = client.users.cache.get(newPresence.member.id);
     console.log(user.username);
     createLoggingInfo(newPresence.member.id, user.username, getCurrentTime(),
-        JSON.stringify(newPresence.clientStatus));
+      JSON.stringify(newPresence.clientStatus));
   }
 });
 
@@ -71,7 +72,7 @@ client.on('messageCreate', (message) => {
   console.log(message.author.username);
 
   createLoggingInfo(message.author.id, message.author.username,
-      getCurrentTime(), 'message');
+    getCurrentTime(), 'message');
 });
 
 // reaction occured
@@ -99,7 +100,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
   console.log(user.id);
   console.log(user.username);
   createLoggingInfo(user.id,
-      user.username, getCurrentTime(), reaction.emoji.name);
+    user.username, getCurrentTime(), reaction.emoji.name);
 });
 
 const TOKEN = process.env.DISCORD_TOKEN;
