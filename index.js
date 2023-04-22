@@ -80,6 +80,11 @@ client.on('messageCreate', (message) => {
 
   createLoggingInfo(message.author.id, message.author.username,
     getCurrentTime(), 'message');
+  
+  // when trash talk happened, do it!
+  if (message.author.id === '432227014892847114') {
+    message.react('👎');
+  }
 });
 
 // reaction occured
