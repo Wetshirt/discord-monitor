@@ -35,7 +35,7 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     console.log('Someone joined');
 
     // if nickname not exist use default username
-    const name = newState.member.nickname;
+    let name = newState.member.nickname;
     if (name == null) {
       name = newState.member.username;
     }
@@ -80,7 +80,7 @@ client.on('messageCreate', (message) => {
 
   createLoggingInfo(message.author.id, message.author.username,
     getCurrentTime(), 'message');
-  
+
   // when trash talk happened, do it!
   if (message.author.id === '432227014892847114') {
     message.react('👎');
