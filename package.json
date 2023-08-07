@@ -9,6 +9,7 @@
   "author": "luo",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.4.0",
     "discord.js": "^14.9.0",
     "dotenv": "^16.0.3",
     "google-spreadsheet": "^3.3.0"
