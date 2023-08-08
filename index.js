@@ -2,6 +2,7 @@ require('dotenv').config();
 const { updateRow } = require('./googleSheet.js');
 const { createLoggingInfo } = require('./googleSheet.js');
 const { getCurrentTime } = require('./date.js');
+const changeNickName = require('./lib/user-name/nameMonitor.js');
 
 // keep our service alive
 require('./keep_alive.js');
@@ -13,6 +14,7 @@ const client = new Client({
     GatewayIntentBits.GuildVoiceStates,
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildMessageTyping,
@@ -113,6 +115,20 @@ client.on('messageReactionAdd', async (reaction, user) => {
   console.log(user.username);
   createLoggingInfo(user.id,
     user.username, getCurrentTime(), reaction.emoji.name);
+});
+
+
+// If someone change name will reset it
+const userId = process.env.USER_ID;
+
+client.on('guildMemberUpdate', (oldMember, newMember) => {
+  if (oldMember.id !== userId) {
+    return;
+  }
+
+  if (newMember.nickname && oldMember.nickname !== newMember.nickname) {
+    changeNickName();
+  }
 });
 
 const TOKEN = process.env.DISCORD_TOKEN;
