@@ -1,7 +1,7 @@
 require('dotenv').config();
-const { updateRow } = require('./googleSheet.js');
-const { createLoggingInfo } = require('./googleSheet.js');
-const { getCurrentTime } = require('./date.js');
+// eslint-disable-next-line max-len
+const { updateRow, createLoggingInfo } = require('./lib/google-sheet/googleSheet.js');
+const { getCurrentTime } = require('./lib/common/date.js');
 const changeNickName = require('./lib/user-name/nameMonitor.js');
 
 // keep our service alive
