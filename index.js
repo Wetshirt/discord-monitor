@@ -120,6 +120,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 
 // If someone change name will reset it
 const userId = process.env.USER_ID;
+const channelId = process.env.CHANNEL_ID;
 
 client.on('guildMemberUpdate', (oldMember, newMember) => {
   if (oldMember.id !== userId) {
@@ -127,7 +128,7 @@ client.on('guildMemberUpdate', (oldMember, newMember) => {
   }
 
   if (newMember.nickname && oldMember.nickname !== newMember.nickname) {
-    changeNickName();
+    changeNickName(channelId);
   }
 });
 
