@@ -81,6 +81,8 @@ client.on('messageCreate', (message) => {
   createLoggingInfo(message.author.id, message.author.username,
     getCurrentTime(), 'message');
 
+  // TODO: pass the image cdn url to mq
+
   // when trash talk happened, do it!
   if (message.author.id === '432227014892847114') {
     message.react('👎');
