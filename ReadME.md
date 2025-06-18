@@ -36,10 +36,10 @@ run `node logout.js` after terminate main script or the not will still exist
 
 ## Deploy
 
-目前是部屬到[replit](https://replit.com/@thisisforsmeeth/channel-monitor)，預計未來建api讓google sheet觸發同時保持replit服務運作
+TBC: 移動至東京節點
 
 
 ## Future
-
+- dynamic control sheet index or create one.
 - log service statue and auto restart when bot disconnected
 - some logic error when checking user state.
