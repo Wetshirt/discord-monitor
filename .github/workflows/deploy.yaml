@@ -1,0 +1,27 @@
+name: Deploy Image
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: pull image and run
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.REMOTE_PORT }}
+        script: |
+          docker pull ${{ secrets.HARBOR_REGISTRY_URL }}/discord-monitor/monitor:latest
+          if docker ps -a --format '{{.Names}}' | grep -Eq 'monitor-service'; then
+            echo "Container exists"
+            docker stop monitor-service
+            docker rm monitor-service
+          fi
+          docker run --name monitor-service -d --restart=always ${{ secrets.HARBOR_REGISTRY_URL }}/discord-monitor/monitor:latest
