@@ -1,11 +1,12 @@
 require('dotenv').config();
-const { updateRow, createLoggingInfo } = require('./lib/google-sheet/googleSheet.js');
-const { getCurrentTime } = require('./lib/common/date.js');
-const changeNickName = require('./lib/user-name/nameMonitor.js');
 
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
 
 const voiceStateUpdateHandler = require('./events/voiceStateUpdate');
+const messageCreateHandler = require('./events/messageCreate');
+const messageReactionAddHandler = require('./events/messageReactionAdd');
+
+const TOKEN = process.env.DISCORD_TOKEN;
 
 const client = new Client({
   intents: [
@@ -20,6 +21,7 @@ const client = new Client({
     GatewayIntentBits.DirectMessages,
     GatewayIntentBits.DirectMessageReactions,
     GatewayIntentBits.DirectMessageTyping,
+    GatewayIntentBits.MessageContent,
   ],
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
@@ -28,85 +30,16 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-// when a channel happened some events  will trigger this function
+// Triggered whenever a user’s voice state changes in any guild channel.
+// This includes joining, leaving, or moving between voice channels.
 client.on('voiceStateUpdate', voiceStateUpdateHandler);
 
-client.on('presenceUpdate', (oldPresence, newPresence) => {
-  if (newPresence && newPresence.status === 'online') {
-    console.log(newPresence.member.user.bot);
-    if (newPresence.member.user.bot) {
-      return;
-    }
-    console.log(newPresence.member.id);
-    console.log(newPresence.clientStatus);
-    const user = client.users.cache.get(newPresence.member.id);
-    console.log(user.username);
-    createLoggingInfo(newPresence.member.id, user.username, getCurrentTime(),
-      JSON.stringify(newPresence.clientStatus));
-  }
-});
+// Triggered whenever a new message is created and sent in a text channel
+// (including DMs, if the bot has access).
+client.on('messageCreate', messageCreateHandler);
 
-client.on('messageCreate', (message) => {
-  if (message.author.bot) {
-    return;
-  }
-  console.log('new message...');
-  console.log(message.author.id);
-  console.log(message.author.username);
+// Triggered whenever a reaction is added to a message that the bot can access.
+// Handles both cached and partially cached messages.
+client.on('messageReactionAdd', messageReactionAddHandler);
 
-  createLoggingInfo(message.author.id, message.author.username,
-    getCurrentTime(), 'message');
-
-  // TODO: pass the image cdn url to mq
-
-  // when trash talk happened, do it!
-  if (message.author.id === '432227014892847114') {
-    message.react('👎');
-  }
-});
-
-// reaction occured
-client.on('messageReactionAdd', async (reaction, user) => {
-  // When a reaction is received, check if the structure is partial
-  if (reaction.partial) {
-    /**
-     * If the message this reaction belongs to was removed
-     * the fetching might result in an API error which should be handled
-     */
-    try {
-      await reaction.fetch();
-    } catch (error) {
-      console.error('Something went wrong when fetching the message:', error);
-      // Return as `reaction.message.author` may be undefined/null
-      return;
-    }
-  }
-
-  // Now the message has been cached and is fully available
-  if (user.bot === true) {
-    return;
-  }
-  console.log('new reaction...');
-  console.log(user.id);
-  console.log(user.username);
-  createLoggingInfo(user.id,
-    user.username, getCurrentTime(), reaction.emoji.name);
-});
-
-// If someone change name will reset it
-const userId = process.env.USER_ID;
-const channelId = process.env.CHANNEL_ID;
-
-client.on('guildMemberUpdate', (oldMember, newMember) => {
-  if (oldMember.id !== userId) {
-    return;
-  }
-
-  if (newMember.nickname && oldMember.nickname !== newMember.nickname) {
-    changeNickName(channelId);
-  }
-});
-
-const TOKEN = process.env.DISCORD_TOKEN;
 client.login(TOKEN);
-// client.destroy();
