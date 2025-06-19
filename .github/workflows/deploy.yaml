@@ -2,10 +2,15 @@ name: Deploy Image
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        type: environment
+        required: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
