@@ -4,6 +4,7 @@
   "description": "Goodbye My Youth",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "luo",
@@ -16,7 +17,6 @@
     "google-spreadsheet": "^4.1.4"
   },
   "devDependencies": {
-    "eslint": "^8.38.0",
-    "eslint-config-google": "^0.14.0"
+    "eslint": "^8.38.0"
   }
 }
