@@ -5,6 +5,8 @@ const changeNickName = require('./lib/user-name/nameMonitor.js');
 
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
 
+const voiceStateUpdateHandler = require('./events/voiceStateUpdate');
+
 const client = new Client({
   intents: [
     // GatewayIntentBits.Guilds,
@@ -26,33 +28,8 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-// channel id: 809263485056712705
-// channel name: 比起說我好像更喜歡聽
 // when a channel happened some events  will trigger this function
-client.on('voiceStateUpdate', (oldState, newState) => {
-  if (newState.channelId && !oldState.channelId) {
-    console.log('Someone joined');
-
-    // if nickname not exist use default username
-    let name = newState.member.nickname;
-    if (name == null) {
-      name = newState.member.username;
-    }
-
-    console.log(name);
-
-    // write connect time to user
-    updateRow(newState.member.id, name, getCurrentTime());
-    createLoggingInfo(newState.member.id, name,
-      getCurrentTime(), 'enter channel');
-  } else if (oldState.channelId && !newState.channelId) {
-    console.log('Someone left');
-    console.log(oldState.member.nickname);
-  } else {
-    console.log('Neither of the two actions occured');
-    // ...
-  }
-});
+client.on('voiceStateUpdate', voiceStateUpdateHandler);
 
 client.on('presenceUpdate', (oldPresence, newPresence) => {
   if (newPresence && newPresence.status === 'online') {
