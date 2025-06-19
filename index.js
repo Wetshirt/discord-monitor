@@ -116,7 +116,6 @@ client.on('messageReactionAdd', async (reaction, user) => {
     user.username, getCurrentTime(), reaction.emoji.name);
 });
 
-
 // If someone change name will reset it
 const userId = process.env.USER_ID;
 const channelId = process.env.CHANNEL_ID;
