@@ -5,6 +5,7 @@ const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const voiceStateUpdateHandler = require('./events/voiceStateUpdate');
 const messageCreateHandler = require('./events/messageCreate');
 const messageReactionAddHandler = require('./events/messageReactionAdd');
+const messageDeleteHandler = require('./events/messageDelete');
 
 const TOKEN = process.env.DISCORD_TOKEN;
 
@@ -41,5 +42,9 @@ client.on('messageCreate', messageCreateHandler);
 // Triggered whenever a reaction is added to a message that the bot can access.
 // Handles both cached and partially cached messages.
 client.on('messageReactionAdd', messageReactionAddHandler);
+
+// Triggered whenever a message is deleted in any channel the bot can access.
+// Used to detect and store deleted images from previously cached messages.
+client.on('messageDelete', messageDeleteHandler);
 
 client.login(TOKEN);
