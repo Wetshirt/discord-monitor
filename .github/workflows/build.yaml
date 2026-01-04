@@ -19,6 +19,7 @@ jobs:
       run:  >
         docker build
         --build-arg DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
+        --build-arg CLIENT_ID=${{ secrets.CLIENT_ID }}
         --build-arg GOOGLE_SERVICE_ACCOUNT_EMAIL=${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
         --build-arg GOOGLE_PRIVATE_KEY='${{ secrets.GOOGLE_PRIVATE_KEY }}'
         --build-arg GOOGLE_SHEET_ID='${{ secrets.GOOGLE_SHEET_ID }}'
