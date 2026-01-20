@@ -8,6 +8,12 @@ Supports **Discord Slash Commands (Global)** and is designed for
 
 ------------------------------------------------------------------------
 
+## Architecture
+
+For a detailed view of the system architecture and data flow, please refer to [docs/Architecture.md](docs/Architecture.md).
+
+------------------------------------------------------------------------
+
 ## Features
 
 -   Monitor voice state, presence, messages, reactions, and deletions
