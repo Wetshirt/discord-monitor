@@ -18,12 +18,12 @@ module.exports = async (oldMember, newMember) => {
   const monitoredId = process.env.USER_ID;
 
   if (newMember.id === monitoredId) {
-    console.log(`[Nickname Monitor] Detected nickname change for ${newMember.user.tag}: ${oldMember.nickname} -> ${newMember.nickname}`);
+    console.log('[Nickname Monitor] Detected nickname change for ' + newMember.user.tag + ': ' + oldMember.nickname + ' -> ' + newMember.nickname);
     try {
       await changeNickName(newMember.guild.id);
       console.log('[Nickname Monitor] Successfully changed nickname back to ', nickName);
     } catch (error) {
-      console.error(`[Nickname Monitor] Failed to change nickname:`, error.response?.data || error.message);
+      console.error('[Nickname Monitor] Failed to change nickname:', error.response?.data || error.message);
     }
   }
 };
