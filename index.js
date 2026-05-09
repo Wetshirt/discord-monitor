@@ -8,6 +8,7 @@ const messageReactionAddHandler = require('./events/messageReactionAdd');
 const messageDeleteHandler = require('./events/messageDelete');
 const interactionCreateHandler = require('./events/interactionCreate');
 const guildMemberUpdateHandler = require('./events/guildMemberUpdate');
+const { getConfig } = require('./lib/google-sheet/googleSheet.js');
 
 const TOKEN = process.env.DISCORD_TOKEN;
 
@@ -29,8 +30,18 @@ const client = new Client({
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
 
-client.on('ready', () => {
+client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
+  
+  // Load initial config from Google Sheets
+  try {
+    const config = await getConfig();
+    client.config = config;
+    console.log('[Config] Initial configuration loaded from Google Sheets:', config);
+  } catch (error) {
+    console.error('[Config] Failed to load initial configuration:', error);
+    client.config = {};
+  }
 });
 
 // Triggered whenever a user’s voice state changes in any guild channel.

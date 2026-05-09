@@ -13,6 +13,18 @@ if (!TOKEN || !CLIENT_ID) {
   // Minimal command list for verification
   const commands = [
     { name: 'test', description: 'Minimal test command' },
+    { 
+      name: 'nick', 
+      description: 'Set your persistent nickname',
+      options: [
+        {
+          name: 'name',
+          description: 'The new nickname',
+          type: 3, // STRING
+          required: true,
+        },
+      ],
+    },
   ];
 
   const rest = new REST({ version: '10' }).setToken(TOKEN);

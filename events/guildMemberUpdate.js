@@ -4,7 +4,7 @@ module.exports = async (oldMember, newMember) => {
   // We only care if the nickname changed
   if (oldMember.nickname === newMember.nickname) return;
 
-  const nickName = process.env.NICKNAME;
+  const nickName = newMember.client.config?.NICKNAME || process.env.NICKNAME;
   
   // If the new nickname is already what we want, do nothing
   if (newMember.nickname === nickName) return;
@@ -20,7 +20,7 @@ module.exports = async (oldMember, newMember) => {
   if (newMember.id === monitoredId) {
     console.log('[Nickname Monitor] Detected nickname change for ' + newMember.user.tag + ': ' + oldMember.nickname + ' -> ' + newMember.nickname);
     try {
-      await changeNickName(newMember.guild.id);
+      await changeNickName(newMember.guild.id, nickName);
       console.log('[Nickname Monitor] Successfully changed nickname back to ', nickName);
     } catch (error) {
       console.error('[Nickname Monitor] Failed to change nickname:', error.response?.data || error.message);
