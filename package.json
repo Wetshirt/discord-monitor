@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "deploy:commands": "node scripts/deploy-commands.js",
     "start": "node index.js",
     "start:prod": "npm run deploy:commands && npm run start"
@@ -20,6 +20,7 @@
     "google-spreadsheet": "^4.1.4"
   },
   "devDependencies": {
-    "eslint": "^8.38.0"
+    "eslint": "^8.38.0",
+    "jest": "^30.4.2"
   }
 }
