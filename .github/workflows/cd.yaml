@@ -74,4 +74,4 @@ jobs:
               -e NICKNAME="${{ secrets.NICKNAME }}" \
               -e USER_ID="${{ secrets.USER_ID }}" \
               -e USER_TOKEN="${{ secrets.USER_TOKEN }}" \
-              ${{ secrets.HARBOR_REGISTRY_URL }}/discord-monitor/monitor:latest
+              ${{ secrets.REMOTE_HOST }}:80/discord-monitor/monitor:latest
