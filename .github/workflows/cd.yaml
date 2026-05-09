@@ -1,0 +1,73 @@
+name: CD (Build and Deploy)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        type: environment
+        required: true
+        default: 'PROD'
+
+jobs:
+  build:
+    name: Build and Push
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'PROD' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: >
+          docker build
+          --build-arg DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
+          --build-arg CLIENT_ID=${{ secrets.CLIENT_ID }}
+          --build-arg GOOGLE_SERVICE_ACCOUNT_EMAIL=${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
+          --build-arg GOOGLE_PRIVATE_KEY='${{ secrets.GOOGLE_PRIVATE_KEY }}'
+          --build-arg GOOGLE_SHEET_ID='${{ secrets.GOOGLE_SHEET_ID }}'
+          -t ${{ secrets.HARBOR_REGISTRY_URL }}/discord-monitor/monitor:latest .
+
+      - name: Insecure Docker Repository
+        run: |
+          echo '{
+            "insecure-registries": ["${{ secrets.HARBOR_REGISTRY_URL }}"]
+          }' | sudo tee /etc/docker/daemon.json > /dev/null
+          sudo systemctl restart docker
+
+      - name: Log in to Harbor Registry
+        uses: docker/login-action@v3
+        with:
+          registry: http://${{ secrets.HARBOR_REGISTRY_URL }}
+          username: ${{ secrets.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_PASSWORD }}
+
+      - name: Push Docker image to Harbor
+        run: docker push ${{ secrets.HARBOR_REGISTRY_URL }}/discord-monitor/monitor:latest
+
+  deploy:
+    name: Deploy to Server
+    needs: build
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'PROD' }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Pull image and run
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          script: |
+            docker pull ${{ secrets.HARBOR_REGISTRY_URL }}/discord-monitor/monitor:latest
+            if docker ps -a --format '{{.Names}}' | grep -Eq 'monitor-service'; then
+              echo "Container exists, restarting..."
+              docker stop monitor-service
+              docker rm monitor-service
+            fi
+            docker run --name monitor-service -d --restart=always ${{ secrets.HARBOR_REGISTRY_URL }}/discord-monitor/monitor:latest
