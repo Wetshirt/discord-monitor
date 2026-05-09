@@ -36,8 +36,8 @@ module.exports = async (interaction) => {
 
       await interaction.editReply({ content: `Successfully updated nickname to: **${newName}**` });
     } catch (error) {
-      console.error('[Command: nick] Error:', error);
-      await interaction.editReply({ content: 'Failed to update nickname. Check logs for details.' });
+      console.error('[Command: nick] Error:', error.message);
+      await interaction.editReply({ content: `Failed to update nickname: ${error.message}` });
     }
     return;
   }
