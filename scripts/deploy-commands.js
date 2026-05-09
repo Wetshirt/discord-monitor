@@ -12,7 +12,7 @@ if (!TOKEN || !CLIENT_ID) {
 (async () => {
   // Minimal command list for verification
   const commands = [
-    { name: 'test', description: 'Minimal test command' },
+    { name: 'ping', description: 'Check if the bot is alive' },
     { 
       name: 'mnick', 
       description: 'Set your persistent nickname (Monitor Bot)',

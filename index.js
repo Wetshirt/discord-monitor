@@ -6,6 +6,7 @@ const voiceStateUpdateHandler = require('./events/voiceStateUpdate');
 const messageCreateHandler = require('./events/messageCreate');
 const messageReactionAddHandler = require('./events/messageReactionAdd');
 const messageDeleteHandler = require('./events/messageDelete');
+const interactionCreateHandler = require('./events/interactionCreate');
 const guildMemberUpdateHandler = require('./events/guildMemberUpdate');
 const { getConfig } = require('./lib/google-sheet/googleSheet.js');
 const fs = require('fs');
