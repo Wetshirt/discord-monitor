@@ -6,6 +6,8 @@ const voiceStateUpdateHandler = require('./events/voiceStateUpdate');
 const messageCreateHandler = require('./events/messageCreate');
 const messageReactionAddHandler = require('./events/messageReactionAdd');
 const messageDeleteHandler = require('./events/messageDelete');
+const interactionCreateHandler = require('./events/interactionCreate');
+const guildMemberUpdateHandler = require('./events/guildMemberUpdate');
 
 const TOKEN = process.env.DISCORD_TOKEN;
 
@@ -46,5 +48,11 @@ client.on('messageReactionAdd', messageReactionAddHandler);
 // Triggered whenever a message is deleted in any channel the bot can access.
 // Used to detect and store deleted images from previously cached messages.
 client.on('messageDelete', messageDeleteHandler);
+
+// Triggered whenever an interaction is created (slash commands, buttons, etc.)
+client.on('interactionCreate', interactionCreateHandler);
+
+// Triggered whenever a guild member is updated (nickname changes, role changes, etc.)
+client.on('guildMemberUpdate', guildMemberUpdateHandler);
 
 client.login(TOKEN);
