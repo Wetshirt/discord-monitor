@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env' });
 
 const { Client, GatewayIntentBits, Partials } = require('discord.js');
 
@@ -12,6 +12,7 @@ const { getConfig } = require('./lib/google-sheet/googleSheet.js');
 const fs = require('fs');
 const path = require('path');
 const { Collection } = require('discord.js');
+const VoiceSessionManager = require('./lib/utils/VoiceSessionManager');
 
 const TOKEN = process.env.DISCORD_TOKEN;
 
@@ -37,6 +38,7 @@ const client = new Client({
 client.config = {};
 client.pendingNickChange = null;
 client.commands = new Collection();
+client.voiceManager = new VoiceSessionManager();
 
 // Load command files
 const commandsPath = path.join(__dirname, 'commands');

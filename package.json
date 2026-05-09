@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "eslint .",
     "test": "jest",
+    "test:integration": "cross-env NODE_ENV=test jest",
     "deploy:commands": "node scripts/deploy-commands.js",
     "start": "node index.js",
     "start:prod": "npm run deploy:commands && npm run start"
@@ -20,6 +21,7 @@
     "google-spreadsheet": "^4.1.4"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "eslint": "^8.38.0",
     "jest": "^30.4.2"
   }

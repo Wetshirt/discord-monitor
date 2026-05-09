@@ -14,6 +14,8 @@ function getDisplayName(member) {
 
 module.exports = async (oldState, newState) => {
   const now = getCurrentTime();
+  const client = newState.client || oldState.client;
+  const voiceManager = client.voiceManager;
 
   // User joined a voice channel
   if (newState.channelId && !oldState.channelId) {
@@ -21,6 +23,11 @@ module.exports = async (oldState, newState) => {
     const name = getDisplayName(member);
 
     console.log(`[${now}] 🔊 Join: ${name}`);
+    
+    // Record join time
+    if (voiceManager) {
+      voiceManager.onJoin(member.id, now);
+    }
 
     await updateRow(member.id, name, now);
     await createLoggingInfo(member.id, name, now, 'enter channel');
@@ -34,8 +41,15 @@ module.exports = async (oldState, newState) => {
 
     console.log(`[${now}] 🔇 Leave: ${name}`);
 
+    // Calculate duration
+    let duration = 'N/A';
+    if (voiceManager) {
+      duration = voiceManager.onLeave(member.id, now) || 'N/A';
+      console.log(`[${now}] 🕒 Duration for ${name}: ${duration}`);
+    }
+
     await updateRow(member.id, name, now);
-    await createLoggingInfo(member.id, name, now, 'leave channel');
+    await createLoggingInfo(member.id, name, now, `leave channel (Duration: ${duration})`);
     return;
   }
 
