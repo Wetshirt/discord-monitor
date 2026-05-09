@@ -13,6 +13,12 @@ const fs = require('fs');
 const path = require('path');
 const { Collection } = require('discord.js');
 const VoiceSessionManager = require('./lib/utils/VoiceSessionManager');
+const { runHealthCheck } = require('./lib/common/healthCheck');
+
+// Run startup health checks
+(async () => {
+  await runHealthCheck();
+})();
 
 const TOKEN = process.env.DISCORD_TOKEN;
 
