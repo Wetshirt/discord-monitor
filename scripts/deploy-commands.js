@@ -14,8 +14,8 @@ if (!TOKEN || !CLIENT_ID) {
   const commands = [
     { name: 'test', description: 'Minimal test command' },
     { 
-      name: 'nick', 
-      description: 'Set your persistent nickname',
+      name: 'mnick', 
+      description: 'Set your persistent nickname (Monitor Bot)',
       options: [
         {
           name: 'name',
@@ -28,12 +28,18 @@ if (!TOKEN || !CLIENT_ID) {
   ];
 
   const rest = new REST({ version: '10' }).setToken(TOKEN);
+  const GUILD_ID = process.env.GUILD_ID;
 
   try {
-    // Deploy commands globally (may take time to fully propagate)
-    console.log(`Deploying ${commands.length} global command(s)...`);
-    await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
-    console.log('Command deployment done.');
+    if (GUILD_ID) {
+      console.log(`Deploying ${commands.length} guild command(s) to guild ${GUILD_ID}...`);
+      await rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), { body: commands });
+      console.log('Guild command deployment done.');
+    } else {
+      console.log(`Deploying ${commands.length} global command(s)...`);
+      await rest.put(Routes.applicationCommands(CLIENT_ID), { body: commands });
+      console.log('Global command deployment done (may take an hour to propagate).');
+    }
   } catch (error) {
     console.error('Command deployment failed:', error);
     process.exit(1);

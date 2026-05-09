@@ -6,9 +6,11 @@ const voiceStateUpdateHandler = require('./events/voiceStateUpdate');
 const messageCreateHandler = require('./events/messageCreate');
 const messageReactionAddHandler = require('./events/messageReactionAdd');
 const messageDeleteHandler = require('./events/messageDelete');
-const interactionCreateHandler = require('./events/interactionCreate');
 const guildMemberUpdateHandler = require('./events/guildMemberUpdate');
 const { getConfig } = require('./lib/google-sheet/googleSheet.js');
+const fs = require('fs');
+const path = require('path');
+const { Collection } = require('discord.js');
 
 const TOKEN = process.env.DISCORD_TOKEN;
 
@@ -30,17 +32,33 @@ const client = new Client({
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
 
+// Initialize config early to avoid reference issues
+client.config = {};
+client.pendingNickChange = null;
+client.commands = new Collection();
+
+// Load command files
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+  const filePath = path.join(commandsPath, file);
+  const command = require(filePath);
+  if ('name' in command && 'execute' in command) {
+    client.commands.set(command.name, command);
+  }
+}
+
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
   
   // Load initial config from Google Sheets
   try {
     const config = await getConfig();
-    client.config = config;
-    console.log('[Config] Initial configuration loaded from Google Sheets:', config);
+    Object.assign(client.config, config);
+    console.log('[Config] Initial configuration loaded from Google Sheets:', client.config);
   } catch (error) {
     console.error('[Config] Failed to load initial configuration:', error);
-    client.config = {};
   }
 });
 
@@ -61,7 +79,10 @@ client.on('messageReactionAdd', messageReactionAddHandler);
 client.on('messageDelete', messageDeleteHandler);
 
 // Triggered whenever an interaction is created (slash commands, buttons, etc.)
-client.on('interactionCreate', interactionCreateHandler);
+client.on('interactionCreate', (interaction) => {
+  console.log(`[Index] Received interaction: ${interaction.commandName || 'Unknown'} from ${interaction.user.tag}`);
+  interactionCreateHandler(interaction);
+});
 
 // Triggered whenever a guild member is updated (nickname changes, role changes, etc.)
 client.on('guildMemberUpdate', guildMemberUpdateHandler);

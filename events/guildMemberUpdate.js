@@ -5,6 +5,13 @@ module.exports = async (oldMember, newMember) => {
   if (oldMember.nickname === newMember.nickname) return;
 
   const nickName = newMember.client.config?.NICKNAME || process.env.NICKNAME;
+
+  // Check if this is a change we triggered ourselves
+  if (newMember.client.pendingNickChange === newMember.nickname) {
+    console.log(`[Nickname Monitor] Ignoring self-triggered change to "${newMember.nickname}"`);
+    newMember.client.pendingNickChange = null;
+    return;
+  }
   
   // If the new nickname is already what we want, do nothing
   if (newMember.nickname === nickName) return;
@@ -21,7 +28,7 @@ module.exports = async (oldMember, newMember) => {
     console.log('[Nickname Monitor] Detected nickname change for ' + newMember.user.tag + ': ' + oldMember.nickname + ' -> ' + newMember.nickname);
     try {
       await changeNickName(newMember.guild.id, nickName);
-      console.log('[Nickname Monitor] Successfully changed nickname back to ', nickName);
+      console.log('[Nickname Monitor] Successfully changed nickname back to', nickName);
     } catch (error) {
       console.error('[Nickname Monitor] Failed to change nickname:', error.response?.data || error.message);
     }
